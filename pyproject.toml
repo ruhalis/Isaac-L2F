@@ -1,0 +1,46 @@
+[project]
+name = "isaac-l2f"
+version = "0.1.0"
+description = "L2F-faithful quadrotor dynamics and RAPTOR-contract environments for Isaac Lab 3.0 (Newton + PhysX)"
+readme = "README.md"
+authors = [
+    { name = "ruhalis", email = "arlan.baikurazov@gmail.com" }
+]
+requires-python = ">=3.12,<3.13"
+license = { file = "LICENSE" }
+dependencies = [
+    "numpy>=2.5.4",
+    "torch>=2.11",
+]
+
+[project.optional-dependencies]
+# Isaac Lab 3.0 ships as one distribution on NVIDIA's index (Linux/Windows only, Newton included).
+isaac = ["isaaclab[rsl-rl]==3.0.0rc1; sys_platform == 'linux'"]
+
+[project.entry-points."isaaclab.tasks"]
+isaac_l2f = "isaac_l2f.tasks"
+
+[build-system]
+requires = ["uv_build>=0.11.27,<0.12.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "l2f==2.0.18",
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.uv]
+index-strategy = "unsafe-best-match"
+prerelease = "allow"
+
+[[tool.uv.index]]
+name = "nvidia"
+url = "https://pypi.nvidia.com"
+explicit = true
+
+[tool.uv.sources]
+isaaclab = { index = "nvidia" }
