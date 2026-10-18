@@ -218,3 +218,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# sim-to-sim recordings written by scripts/fly_raptor.py and scripts/sim_to_sim.py
+runs/
