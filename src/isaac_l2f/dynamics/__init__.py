@@ -8,8 +8,10 @@ from .model import (
     motor_step_closed_form,
     rk4_step,
     rotor_thrust,
+    rotor_thrust_mean,
     rotor_wrench,
     step,
+    wrench_from_thrust,
 )
 from .observation import privileged_observation, student_observation
 from .params import Params, load_registry
@@ -20,5 +22,6 @@ from .state import State
 __all__ = [
     "DISTILLATION_INIT", "Derivative", "Params", "State", "action_to_command", "dxdt", "load_registry",
     "motor_step_closed_form", "privileged_observation", "reward", "rk4_step", "rotor_thrust",
-    "rotor_wrench", "sample_initial_state", "sample_parameters", "step", "student_observation", "terminated",
+    "rotor_thrust_mean", "rotor_wrench", "sample_initial_state", "sample_parameters", "step", "student_observation",
+    "terminated", "wrench_from_thrust",
 ]  # fmt: skip
