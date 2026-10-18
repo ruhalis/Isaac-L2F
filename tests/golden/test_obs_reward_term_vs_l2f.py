@@ -28,6 +28,22 @@ def test_observation_matches() -> None:
     np.testing.assert_allclose(ours[:, :18].numpy(), ref[:, :18], rtol=1e-5, atol=1e-6)
 
 
+def test_observation_all_dims_after_out_of_range_action() -> None:
+    """The oracle stores the RAW (unclamped) action as the newest history entry (obs dims 18:22)."""
+    p, s, _ = _batch()
+    o = Oracle(p.to_json_dicts())
+    o.set_state(s)
+    a = torch.tensor([[1.5, -1.5, 0.3, -0.3]] * NB)
+    o.step(a)
+    s1 = step(p, s, a)
+    o.set_state(s1)  # isolate the observation map from integration differences
+    ref = o.observe()
+    ours = student_observation(p, s1)
+    np.testing.assert_allclose(ref[:, 18:22], a.numpy(), atol=1e-6)
+    np.testing.assert_allclose(ours[:, 18:22].numpy(), ref[:, 18:22], atol=1e-6)
+    np.testing.assert_allclose(ours[:, :22].numpy(), ref[:, :22], rtol=1e-5, atol=1e-6)
+
+
 def test_terminated_matches() -> None:
     p, s, _ = _batch()
     o = Oracle(p.to_json_dicts())

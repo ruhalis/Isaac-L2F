@@ -15,7 +15,7 @@ class State:
     """Quadrotor state. Position/velocity/force in WORLD frame; angular velocity/torque in BODY frame.
 
     ``orientation`` is (w,x,y,z) body->world; ``rpm`` is motor state in action-limit units
-    (``[0,1]`` = normalised throttle); ``last_action`` is the raw action in [-1,1]; ``force`` is a
+    (``[0,1]`` = normalised throttle); ``last_action`` is the raw (unclamped) action passed to ``step``, matching the l2f history channel; ``force`` is a
     world-frame disturbance force (N); ``torque`` a body-frame disturbance torque (N m).
     """
 

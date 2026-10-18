@@ -80,3 +80,47 @@ def test_effectiveness_zero_removes_rotor(cf64) -> None:
     assert torch.allclose(f[0], expected_f, atol=1e-12)
     assert torch.allclose(tau[0], expected_t, atol=1e-12)
     assert torch.allclose(rotor_wrench(p, u, torch.ones_like(u))[0], f0)
+
+
+def test_effectiveness_half_scales_thrust_drag_and_arm_moment(cf64) -> None:
+    from isaac_l2f.dynamics import rotor_thrust
+
+    p = cf64
+    u = torch.tensor([[0.5, 0.6, 0.7, 0.8]], dtype=torch.float64)
+    eff = torch.tensor([[1.0, 1.0, 1.0, 0.5]], dtype=torch.float64)
+    f, tau = rotor_wrench(p, u, eff)
+    f0, tau0 = rotor_wrench(p, u)
+    t = rotor_thrust(p, u)  # [1,4]
+    dirs = p.rotor_thrust_directions
+    # total force = sum of per-rotor thrusts with rotor 3 halved
+    expected_f = (t * eff)[..., None] * dirs
+    assert torch.allclose(f, expected_f.sum(1), atol=1e-12)
+    # change in torque = half of rotor 3's drag torque + half of its arm moment
+    drag3 = p.rotor_torque_directions[0, 3] * p.rotor_torque_constants[0, 3] * t[0, 3]
+    arm3 = torch.cross(p.rotor_positions[0, 3], t[0, 3] * dirs[0, 3], dim=-1)
+    assert torch.allclose(tau0[0] - tau[0], 0.5 * (drag3 + arm3), atol=1e-12)
+    # yaw component of the change is exactly half of rotor 3's reaction torque (z) plus half its arm-moment z
+    assert torch.allclose(tau0[0, 2] - tau[0, 2], 0.5 * (drag3[2] + arm3[2]), atol=1e-12)
+    assert abs(float(drag3[2])) > 0
+    # None == ones
+    fo, to = rotor_wrench(p, u, torch.ones_like(u))
+    assert torch.equal(fo, f0) and torch.equal(to, tau0)
+
+
+def test_step_passes_effectiveness_through(cf64) -> None:
+    from isaac_l2f.dynamics import step
+
+    p = cf64
+    c0, c1, c2 = (float(x) for x in p.rotor_thrust_coefficients[0, 0])
+    target = float(p.mass[0]) * 9.81 / 4
+    u = (-c1 + math.sqrt(c1**2 - 4 * c2 * (c0 - target))) / (2 * c2)
+    s = State.zeros(1, dtype=torch.float64)
+    s.rpm = torch.full((1, 4), u, dtype=torch.float64)
+    lo, hi = float(p.action_min[0]), float(p.action_max[0])
+    a = torch.full((1, 4), (u - lo) / (hi - lo) * 2 - 1, dtype=torch.float64)
+    ok = step(p, s, a)
+    eff = torch.ones(1, 4, dtype=torch.float64)
+    eff[0, 0] = 0.0
+    bad = step(p, s, a, effectiveness=eff)
+    assert float(ok.angular_velocity[0, :2].abs().max()) < 1e-6
+    assert float(bad.angular_velocity[0, :2].abs().max()) > 1e-3

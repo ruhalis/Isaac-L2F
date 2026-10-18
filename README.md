@@ -12,9 +12,6 @@ exact motor and wrench model and the RAPTOR observation/action contract into Isa
 that policies trained in L2F fly in Isaac Lab zero-shot, and vision policies can be trained
 on top of the same dynamics.
 
-Status: **M0 (dynamics core) done.** The Isaac Lab environments are the next milestone; see
-[PLAN.md](PLAN.md).
-
 ## The contract
 
 Everything in this package is written to one contract, the one RAPTOR and L2F use:
@@ -22,10 +19,15 @@ Everything in this package is written to one contract, the one RAPTOR and L2F us
 | | |
 |---|---|
 | Frames | body FLU (x forward, y left, z up), world z-up |
-| Observation (22) | position (3, world) · rotation matrix row-major (9) · linear velocity (3, world) · angular velocity (3, body) · previous action (4) |
+| Observation (22) | position − p_ref (3, world) · rotation matrix row-major (9) · linear velocity − v_ref (3, world) · angular velocity (3, body) · previous action (4, raw) |
 | Action (4) | per-motor, normalised to [-1, 1], order front-right, back-right, back-left, front-left |
 | Rate | 100 Hz (dt = 0.01 s), one RK4 step per control step |
 | Quaternion | (w, x, y, z), body-to-world |
+
+The reference `(p_ref, v_ref)` is an input with neutral defaults (origin, zero velocity); a
+static setpoint has `v_ref = 0`. The previous action is the raw, unclamped action passed to
+the last step, as the `l2f` oracle keeps it. Trajectory references, position-error clamps,
+observation delays and noise schedules are downstream wrappers, not variants of the contract.
 
 ## What is here
 
@@ -37,8 +39,18 @@ Everything in this package is written to one contract, the one RAPTOR and L2F us
 - RK4 step, post-integration, observation, reward, termination, initial-state sampling
 - the RAPTOR domain-randomisation sampler (thrust-to-weight, torque-to-inertia, mass, size,
   time constants, torque constant, disturbance magnitude)
-- `rotor_wrench(params, u)` returning the body-frame force and torque, which is what the
-  Isaac Lab environment injects through the wrench composer
+- `rotor_wrench(params, u, effectiveness)` returning the body-frame force and torque, which
+  is what the Isaac Lab environment injects through the wrench composer; the optional
+  per-rotor `effectiveness` `[N, 4]` scales a rotor's thrust and with it its reaction torque
+  and arm moment (the hook fault schedules drive from downstream)
+- world-frame disturbance force and body-frame disturbance torque on the state
+
+`isaac_l2f.policy` is the policy protocol every env runs: `reset(mask)` / `step(obs) -> action`.
+The policy owns its recurrent state and re-seeds the masked envs from its own `h0`; the hidden
+size comes from the artefact. Loaders exist for TorchScript (a scripted module with
+`forward(obs, hidden) -> (action, hidden)`, an `h0` buffer and a `hidden_size` attribute;
+feed-forward policies use size 0) and ONNX (inputs `obs`, `hidden`; outputs `action`,
+`hidden_out`; needs the `onnx` extra).
 
 Upstream quirks are reproduced on purpose, not fixed: `J` and `J_inv` are stored
 independently and used as loaded, the orientation cost is `2·acos(1 − |q_z|)`, and the
@@ -54,7 +66,13 @@ gen = torch.Generator().manual_seed(0)
 state = sample_initial_state(params, 1024, gen)
 action = torch.zeros(1024, 4)
 state = step(params, state, action)
-obs = student_observation(params, state)   # [1024, 22]
+obs = student_observation(params, state)   # [1024, 22], reference = origin / zero velocity
+
+from isaac_l2f.policy import load_torchscript
+
+policy = load_torchscript("student.pt")     # hidden size read from the artefact
+action = policy.step(obs)                   # raw action; the env clamps
+policy.reset(mask=torch.tensor([True] + [False] * 1023))   # re-seed env 0 only
 ```
 
 ## Install

@@ -16,6 +16,7 @@ dependencies = [
 [project.optional-dependencies]
 # Isaac Lab 3.0 ships as one distribution on NVIDIA's index (Linux/Windows only, Newton included).
 isaac = ["isaaclab[rsl-rl]==3.0.0rc1; sys_platform == 'linux'"]
+onnx = ["onnxruntime>=1.20"]
 
 [project.entry-points."isaaclab.tasks"]
 isaac_l2f = "isaac_l2f.tasks"
@@ -27,6 +28,8 @@ build-backend = "uv_build"
 [dependency-groups]
 dev = [
     "l2f==2.0.18",
+    "onnx>=1.23.2",
+    "onnxruntime>=1.31.0",
     "pytest>=9.1.1",
 ]
 
