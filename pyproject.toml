@@ -9,13 +9,18 @@ authors = [
 requires-python = ">=3.12,<3.13"
 license = { file = "LICENSE" }
 dependencies = [
-    "numpy>=2.5.4",
+    "numpy>=2.0",
     "torch>=2.11",
 ]
 
 [project.optional-dependencies]
 # Isaac Lab 3.0 ships as one distribution on NVIDIA's index (Linux/Windows only, Newton included).
-isaac = ["isaaclab[rsl-rl]==3.0.0rc1; sys_platform == 'linux'"]
+# Kit-less path (primary): `ov` adds the kit-less PhysX, RTX and stage packages, so both physics
+# presets and both renderers run without Isaac Sim.
+isaac = ["isaaclab[rsl-rl,ov]==3.0.0rc1; sys_platform == 'linux'"]
+# Kit path: full Isaac Sim 6.1 for USD/GUI workflows and importers (several GB of extension cache).
+# Mutually exclusive with `isaac`: isaacsim-core pins packaging==26.0, ovphysx needs packaging<24.
+isaacsim = ["isaaclab[rsl-rl,isaacsim]==3.0.0rc1; sys_platform == 'linux'"]
 onnx = ["onnxruntime>=1.20"]
 
 [project.entry-points."isaaclab.tasks"]
@@ -28,8 +33,8 @@ build-backend = "uv_build"
 [dependency-groups]
 dev = [
     "l2f==2.0.18",
-    "onnx>=1.23.2",
-    "onnxruntime>=1.31.0",
+    "onnx>=1.16",
+    "onnxruntime>=1.20",
     "pytest>=9.1.1",
 ]
 
@@ -39,11 +44,14 @@ testpaths = ["tests"]
 [tool.uv]
 index-strategy = "unsafe-best-match"
 prerelease = "allow"
+conflicts = [[{ extra = "isaac" }, { extra = "isaacsim" }]]
 
+# Not explicit: Isaac Sim pins NVIDIA-built transitive packages (e.g. opencv-python-headless-noffmpeg
+# 4.14.0.94rc1) that exist only here, and a tool.uv.sources pin cannot reach transitive deps.
+# Together with index-strategy = "unsafe-best-match" this is NVIDIA's documented --extra-index-url setup.
 [[tool.uv.index]]
 name = "nvidia"
 url = "https://pypi.nvidia.com"
-explicit = true
 
 [tool.uv.sources]
 isaaclab = { index = "nvidia" }

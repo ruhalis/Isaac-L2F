@@ -85,14 +85,37 @@ uv run pytest -q
 ```
 
 With Isaac Lab 3.0 (Linux, NVIDIA GPU, Python 3.12). Isaac Lab ships as one distribution on
-NVIDIA's package index with Newton included, so the `isaac` extra is all that is needed:
+NVIDIA's package index with Newton included. The primary, kit-less path also pulls Isaac Lab's
+kit-less PhysX, RTX and stage packages (`ovphysx`, `ovrtx`, `ovstage`), so both physics presets
+and both renderers run without Isaac Sim:
 
 ```bash
 uv sync --extra isaac
 ```
 
-Kit-less training uses `physics=newton_mjwarp renderer=newton_renderer`; the PhysX preset
-needs an Isaac Sim 6.x install on top.
+The Kit path installs full Isaac Sim 6.1 for USD/GUI workflows and importers; PhysX and RTX then
+run through Kit. The two extras are mutually exclusive (Isaac Sim 6.1 pins `packaging==26.0`,
+the kit-less PhysX package needs `packaging<24`), so switching is one sync either way:
+
+```bash
+UV_HTTP_TIMEOUT=1800 uv sync --extra isaacsim   # extension-cache wheels are multi-GB; uv's 30 s default times out
+```
+
+Kit-less training uses `physics=newton_mjwarp`; the PhysX preset is `physx`, Isaac Lab's auto
+selector, which resolves to `ovphysx` without Isaac Sim and to `isaacsim_physx` under Kit; the
+kit-less renderer selector is `ovrtx`. NVIDIA's index is a
+regular extra index here (`unsafe-best-match`), as in NVIDIA's own pip instructions, because
+Isaac Sim pins NVIDIA-built transitive packages that exist only there.
+
+Two Linux-only rules that follow from the split lock:
+
+- Pass the same extra to every `uv run` on that machine (`uv run --extra isaacsim python ...`,
+  `uv run --extra isaac isaaclab train ...`) or use `uv run --no-sync`. A bare `uv run` re-syncs
+  to the default extra set, which is a different resolver split (the Kit split pins
+  `torch==2.11.0` and `numpy==2.3.1`; the kit-less and macOS splits take the latest), so it
+  silently moves the venv off Isaac Sim's pins.
+- Anything that imports `isaacsim` needs NVIDIA's EULA accepted non-interactively:
+  `OMNI_KIT_ACCEPT_EULA=YES`. Export it in your shell profile on the box if you accept it.
 
 ## Acknowledgements
 
