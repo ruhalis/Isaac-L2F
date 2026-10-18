@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.12,<3.13"
 license = { file = "LICENSE" }
 dependencies = [
+    "gymnasium>=1.0",
     "numpy>=2.0",
     "torch>=2.11",
 ]
@@ -22,6 +23,10 @@ isaac = ["isaaclab[rsl-rl,ov]==3.0.0rc1; sys_platform == 'linux'"]
 # Mutually exclusive with `isaac`: isaacsim-core pins packaging==26.0, ovphysx needs packaging<24.
 isaacsim = ["isaaclab[rsl-rl,isaacsim]==3.0.0rc1; sys_platform == 'linux'"]
 onnx = ["onnxruntime>=1.20"]
+raptor = [
+    "foundation-policy>=1.0.2",
+    "h5py>=3.10",
+]
 
 [project.entry-points."isaaclab.tasks"]
 isaac_l2f = "isaac_l2f.tasks"
@@ -32,6 +37,8 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "foundation-policy>=1.0.2",
+    "h5py>=3.10",
     "l2f==2.0.18",
     "onnx>=1.16",
     "onnxruntime>=1.20",

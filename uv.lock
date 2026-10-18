@@ -1246,6 +1246,18 @@ wheels = [
 ]
 
 [[package]]
+name = "foundation-policy"
+version = "1.0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "h5py" },
+    { name = "importlib-resources" },
+    { name = "numpy", version = "2.3.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
+    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/2e/ff/b80b9215de9df04d50e62c32a2b78d06627407dcfc1bb1808709630bf136/foundation_policy-1.0.2.tar.gz", hash = "sha256:fd869d9603da60eaddbec08f212d32b1e23ca279ff56994a871a89dc1d2242f6", size = 112323, upload-time = "2025-09-18T07:09:42.949Z" }
+
+[[package]]
 name = "frozenlist"
 version = "1.5.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1388,7 +1400,7 @@ dependencies = [
     { name = "cloudpickle" },
     { name = "farama-notifications" },
     { name = "numpy", version = "2.3.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
-    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
+    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
     { name = "typing-extensions" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/fb/3a/6713c8a92c259fd7619dc93ff19e6e435463f20d3d7b180b14ce99074c10/gymnasium-1.4.0.tar.gz", hash = "sha256:9754f630a32abfdbb76386abe1bc1e706c982db2d62dfa119c9952eb2de7697d", size = 350436, upload-time = "2026-10-05T11:02:16.217Z" }
@@ -1411,7 +1423,7 @@ version = "3.16.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy", version = "2.3.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
-    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
+    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/db/33/acd0ce6863b6c0d7735007df01815403f5589a21ff8c2e1ee2587a38f548/h5py-3.16.0.tar.gz", hash = "sha256:a0dbaad796840ccaa67a4c144a0d0c8080073c34c76d5a6941d6818678ef2738", size = 446526, upload-time = "2026-03-06T13:49:08.07Z" }
 wheels = [
@@ -1735,6 +1747,7 @@ name = "isaac-l2f"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "gymnasium" },
     { name = "numpy", version = "2.3.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
     { name = "torch", version = "2.11.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
@@ -1752,9 +1765,15 @@ onnx = [
     { name = "onnxruntime", version = "1.26.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
     { name = "onnxruntime", version = "1.31.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
 ]
+raptor = [
+    { name = "foundation-policy" },
+    { name = "h5py" },
+]
 
 [package.dev-dependencies]
 dev = [
+    { name = "foundation-policy" },
+    { name = "h5py" },
     { name = "l2f" },
     { name = "onnx" },
     { name = "onnxruntime", version = "1.26.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
@@ -1764,16 +1783,21 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "foundation-policy", marker = "extra == 'raptor'", specifier = ">=1.0.2" },
+    { name = "gymnasium", specifier = ">=1.0" },
+    { name = "h5py", marker = "extra == 'raptor'", specifier = ">=3.10" },
     { name = "isaaclab", extras = ["rsl-rl", "isaacsim"], marker = "sys_platform == 'linux' and extra == 'isaacsim'", specifier = "==3.0.0rc1", index = "https://pypi.nvidia.com/" },
     { name = "isaaclab", extras = ["rsl-rl", "ov"], marker = "sys_platform == 'linux' and extra == 'isaac'", specifier = "==3.0.0rc1", index = "https://pypi.nvidia.com/" },
     { name = "numpy", specifier = ">=2.0" },
     { name = "onnxruntime", marker = "extra == 'onnx'", specifier = ">=1.20" },
     { name = "torch", specifier = ">=2.11" },
 ]
-provides-extras = ["isaac", "isaacsim", "onnx"]
+provides-extras = ["isaac", "isaacsim", "onnx", "raptor"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "foundation-policy", specifier = ">=1.0.2" },
+    { name = "h5py", specifier = ">=3.10" },
     { name = "l2f", specifier = "==2.0.18" },
     { name = "onnx", specifier = ">=1.16" },
     { name = "onnxruntime", specifier = ">=1.20" },
