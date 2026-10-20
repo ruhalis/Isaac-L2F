@@ -26,6 +26,11 @@ Display offset: L2F has no ground and hovers at the origin. Everything is shifte
 ``--ground-depth`` (default 1.05 m, below the 1 m termination box) so a visual-only ground sits at
 z = 0; telemetry is reported in the recording's (L2F) frame. The drone is the chosen env only.
 
+Props: each spins about its hub, in the direction opposite its L2F reaction torque, at a visual
+rate proportional to the recorded motor state (``--prop-speed`` degrees per frame at full throttle;
+the real ~20k RPM aliases at video frame rates). At the default 640x360 the spin reads in ``chase``
+and ``ref_frame``; the props are a few pixels in the fixed world views.
+
 Outputs in ``--out``: ``<view>/NNNNN.png`` frames, ``<view>.mp4``, ``composite.mp4`` (3x2, labelled,
 real time), ``composite.gif`` (with ``--gif``), ``contact_sheet.png`` and ``stills/``.
 """
@@ -43,10 +48,12 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
+from isaac_l2f.dynamics import load_registry
 from isaac_l2f.sim2sim import Recording
 
 DEFAULT_ASSET_ROOT = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.1"
 CRAZYFLIE_SUBPATH = "Isaac/Robots/Bitcraze/Crazyflie/cf2x.usd"  # same file as isaaclab_assets CRAZYFLIE_CFG
+PROP_PRIMS = ("m1_prop", "m2_prop", "m3_prop", "m4_prop")  # cf2x: FR, BR, BL, FL (contract order), origin on the hub, axis local z
 HORIZONTAL_APERTURE = 20.955  # USD default; only the focal/aperture ratio (the FOV) matters here
 
 
@@ -141,6 +148,7 @@ class Clip:
     error: np.ndarray  # [F] |p - p_ref|
     z_error: np.ndarray  # [F] p_z - p_ref_z
     tilt: np.ndarray  # [F] degrees
+    prop_angle: np.ndarray  # [F, 4] degrees about each prop's local z, FR/BR/BL/FL
     fps: float
     title: str
 
@@ -161,6 +169,14 @@ def load_clip(args) -> Clip:
     r = rec.position_ref[: end + 1, e].astype(np.float64)
     dt = float(rec.meta.get("dt", 0.01))
     m = rec.meta
+    # props: motor state normalised to [0, 1] by the action limits, integrated over recording steps (so a speed
+    # change never jumps the angle); a rotor spins opposite to the reaction torque it puts on the body
+    params = load_registry(m.get("airframe", "crazyflie"))
+    lo, hi = float(params.action_min[0]), float(params.action_max[0])
+    spin = -params.rotor_torque_directions[0, :, 2].numpy().astype(np.float64)
+    u = np.clip((rec.rpm[: end + 1, e].astype(np.float64) - lo) / (hi - lo), 0.0, 1.0)
+    turns = np.concatenate([np.zeros((1, 4)), np.cumsum(u[:-1], axis=0)])
+    prop_angle = (turns[idx] * spin * args.prop_speed / args.stride) % 360.0
     title = args.title or (
         f"{m.get('policy', 'policy')} | {m.get('task', 'pure L2F')} | {m.get('backend', 'l2f')} | "
         f"reference {m.get('reference', '?')} | env {e} | replayed in Isaac Sim"
@@ -174,6 +190,7 @@ def load_clip(args) -> Clip:
         error=np.linalg.norm(p[idx] - r[idx], axis=-1),
         z_error=p[idx, 2] - r[idx, 2],
         tilt=tilt_deg(q[idx]),
+        prop_angle=prop_angle,
         fps=1.0 / (dt * args.stride),
         title=title,
     )
@@ -366,6 +383,14 @@ def render(args, clip: Clip, views: list[View]) -> None:
         for api in (UsdPhysics.ArticulationRootAPI, UsdPhysics.RigidBodyAPI, UsdPhysics.MassAPI, UsdPhysics.CollisionAPI):
             if prim.HasAPI(api):
                 prim.RemoveAPI(api)
+    # props: a spin op appended last in each prop's op order, so it rotates the blades about the hub (the prop origin)
+    prop_ops = []
+    if args.prop_speed:
+        props = [stage.GetPrimAtPath(f"/World/Drone/cf/{name}") for name in PROP_PRIMS]
+        if all(prop.IsValid() for prop in props):
+            prop_ops = [UsdGeom.Xformable(prop).AddRotateZOp(opSuffix="spin") for prop in props]
+        else:
+            print(f"[render] {usd} has no {'/'.join(PROP_PRIMS)}; props stay still")
     # FLU body axes: x red, y green, z blue, from the deck centre
     axis_len, axis_w, deck = 0.08, 0.003, 0.015
     for name, rgb, centre, size in (
@@ -400,6 +425,8 @@ def render(args, clip: Clip, views: list[View]) -> None:
         i = clip.idx[k]
         drone_t.Set(Gf.Vec3d(*map(float, clip.position[i])))
         drone_q.Set(Gf.Quatd(*map(float, clip.orientation[i])))
+        for op, angle in zip(prop_ops, clip.prop_angle[k]):
+            op.Set(float(angle))
         ref_op.Set(Gf.Vec3d(*map(float, clip.position_ref[i])))
         trail_update(clip.position[: max(i, 1) + 1])
         for view in views:
@@ -571,6 +598,8 @@ def parse_args():
     p.add_argument("--setting", action="append", default=[], metavar="/carb/path=VALUE", help="extra carb setting, repeatable")
     p.add_argument("--warmup", type=int, default=60, help="app updates before the first capture")
     p.add_argument("--usd", default=None, help="Crazyflie USD (default: <Isaac asset root>/" + CRAZYFLIE_SUBPATH + ")")
+    p.add_argument("--prop-speed", type=float, default=60.0, help="prop spin, degrees per video frame at full throttle "
+                   "(visual rate; keep it under 90 for the 2-blade props or they appear to turn backwards; 0 = still)")  # fmt: skip
     p.add_argument("--keyframes", type=int, default=5)
     p.add_argument("--crf", type=int, default=20, help="H.264 CRF of the per-view videos")
     p.add_argument("--composite-crf", type=int, default=23)
