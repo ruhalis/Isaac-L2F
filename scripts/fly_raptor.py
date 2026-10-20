@@ -66,7 +66,7 @@ def main() -> None:
     with launch_simulation(env_cfg, args):
         env = gym.make(args.task, cfg=env_cfg)
         u = env.unwrapped
-        device, n = u.device, u.num_envs
+        device, n = torch.device(u.device), u.num_envs  # rc1's DirectRLEnv.device is a str
         policy = load_torchscript(args.policy, map_location=device) if args.policy else load_raptor(device=device)
         reference = (
             figure_eight(args.fig8_amplitude, args.fig8_period, device=device) if args.reference == "figure8" else hover_reference(device)
