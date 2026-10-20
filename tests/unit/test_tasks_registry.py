@@ -39,4 +39,4 @@ def test_isaac_facing_modules_compile():
     for name in ("hover_env.py", "hover_env_cfg.py", "agents/rsl_rl_ppo_cfg.py"):
         src = (root / name).read_text()
         compile(src, str(root / name), "exec")
-        assert "raptor_torch" not in src and "aquila" not in src
+        assert "verro" not in src and "raptor_torch" not in src and "aquila" not in src
