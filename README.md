@@ -1,7 +1,19 @@
 # Isaac-L2F
 
+[![tests](https://github.com/ruhalis/Isaac-L2F/actions/workflows/tests.yml/badge.svg)](https://github.com/ruhalis/Isaac-L2F/actions/workflows/tests.yml)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](pyproject.toml)
+[![Isaac Lab 3.0.0rc1](https://img.shields.io/badge/Isaac%20Lab-3.0.0rc1-76B900.svg)](https://github.com/isaac-sim/IsaacLab)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 L2F-faithful quadrotor dynamics and RAPTOR-contract environments for
 [NVIDIA Isaac Lab 3.0](https://github.com/isaac-sim/IsaacLab) on both Newton and PhysX.
+
+<p align="center">
+  <img src="docs/media/fig8.gif" width="800" alt="RAPTOR flying a figure-eight in Isaac-L2F">
+  <br>
+  <em>The RAPTOR foundation policy flying a 6 s figure-eight in <code>Isaac-L2F-Hover-Direct</code>
+  on Newton/MJWarp, replayed in Isaac Sim. Yellow: reference, cyan: flown path.</em>
+</p>
 
 [L2F](https://github.com/rl-tools/l2f) ("Learning to Fly in Seconds", rl-tools) is the
 fastest quadrotor dynamics simulator and the training ground of the
@@ -121,6 +133,36 @@ Two Linux-only rules that follow from the split lock:
 
 Dynamics model and parameter format from [rl-tools/l2f](https://github.com/rl-tools/l2f)
 (MIT) and the RAPTOR pre-training code in [rl-tools](https://github.com/rl-tools/rl-tools).
+
+## Citing
+
+The GitHub sidebar's "Cite this repository" gives the entry for this package (from
+[CITATION.cff](CITATION.cff)). Please also cite the L2F paper whose dynamics it ports, and
+RAPTOR if you fly the foundation policy:
+
+```bibtex
+@article{eschmann2024learning,
+  author  = {Jonas Eschmann and Dario Albani and Giuseppe Loianno},
+  title   = {Learning to Fly in Seconds},
+  journal = {IEEE Robotics and Automation Letters},
+  year    = {2024},
+  volume  = {9},
+  number  = {7},
+  pages   = {6336--6343},
+  doi     = {10.1109/LRA.2024.3396025}
+}
+
+@article{eschmann2026raptor,
+  author  = {Jonas Eschmann and Dario Albani and Giuseppe Loianno},
+  title   = {RAPTOR: A foundation policy for quadrotor control},
+  journal = {Science Robotics},
+  year    = {2026},
+  volume  = {11},
+  number  = {114},
+  pages   = {eaec1481},
+  doi     = {10.1126/scirobotics.aec1481}
+}
+```
 
 ## License
 

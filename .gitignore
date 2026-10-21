@@ -221,3 +221,6 @@ __marimo__/
 
 # sim-to-sim recordings written by scripts/fly_raptor.py and scripts/sim_to_sim.py
 runs/
+
+# macOS Finder metadata
+.DS_Store

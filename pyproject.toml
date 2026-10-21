@@ -8,6 +8,29 @@ authors = [
 ]
 requires-python = ">=3.12,<3.13"
 license = { file = "LICENSE" }
+keywords = [
+    "isaac-lab",
+    "isaac-sim",
+    "quadrotor",
+    "drone",
+    "reinforcement-learning",
+    "sim-to-real",
+    "l2f",
+    "raptor",
+    "newton",
+    "physx",
+    "robotics",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Physics",
+]
 dependencies = [
     "gymnasium>=1.0",
     "numpy>=2.0",
@@ -27,6 +50,11 @@ raptor = [
     "foundation-policy>=1.0.2",
     "h5py>=3.10",
 ]
+
+[project.urls]
+Repository = "https://github.com/ruhalis/Isaac-L2F"
+Issues = "https://github.com/ruhalis/Isaac-L2F/issues"
+Releases = "https://github.com/ruhalis/Isaac-L2F/releases"
 
 [project.entry-points."isaaclab.tasks"]
 isaac_l2f = "isaac_l2f.tasks"

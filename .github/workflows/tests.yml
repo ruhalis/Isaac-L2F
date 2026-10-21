@@ -1,0 +1,19 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    # The dynamics core and its tests run on CPU without Isaac Lab (macOS torch wheels are CPU-only).
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run --locked pytest -q
+      - run: uv build

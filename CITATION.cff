@@ -1,0 +1,66 @@
+cff-version: 1.2.0
+message: >-
+  If you use Isaac-L2F, please cite it as below, together with the L2F paper whose
+  dynamics it ports (and RAPTOR if you fly the foundation policy).
+title: "Isaac-L2F: L2F-faithful quadrotor dynamics and RAPTOR-contract environments for Isaac Lab"
+type: software
+authors:
+  - alias: ruhalis
+version: 0.1.0
+date-released: "2026-10-21"
+license: MIT
+repository-code: "https://github.com/ruhalis/Isaac-L2F"
+keywords:
+  - isaac-lab
+  - quadrotor
+  - reinforcement-learning
+  - sim-to-real
+  - l2f
+  - raptor
+references:
+  - type: article
+    title: "Learning to Fly in Seconds"
+    authors:
+      - family-names: Eschmann
+        given-names: Jonas
+        orcid: "https://orcid.org/0000-0002-3320-6502"
+      - family-names: Albani
+        given-names: Dario
+        orcid: "https://orcid.org/0000-0001-6692-4925"
+      - family-names: Loianno
+        given-names: Giuseppe
+        orcid: "https://orcid.org/0000-0002-3263-5401"
+    journal: "IEEE Robotics and Automation Letters"
+    year: 2024
+    month: 7
+    volume: 9
+    issue: "7"
+    start: 6336
+    end: 6343
+    doi: 10.1109/LRA.2024.3396025
+    url: "https://arxiv.org/abs/2311.13081"
+  - type: software
+    title: "L2F: Learning to Fly Simulator"
+    authors:
+      - family-names: Eschmann
+        given-names: Jonas
+    repository-code: "https://github.com/rl-tools/l2f"
+    url: "https://l2f.rl.tools"
+    license: MIT
+  - type: article
+    title: "RAPTOR: A foundation policy for quadrotor control"
+    authors:
+      - family-names: Eschmann
+        given-names: Jonas
+        orcid: "https://orcid.org/0000-0002-3320-6502"
+      - family-names: Albani
+        given-names: Dario
+        orcid: "https://orcid.org/0000-0001-6692-4925"
+      - family-names: Loianno
+        given-names: Giuseppe
+        orcid: "https://orcid.org/0000-0002-3263-5401"
+    journal: "Science Robotics"
+    year: 2026
+    volume: 11
+    issue: "114"
+    doi: 10.1126/scirobotics.aec1481
