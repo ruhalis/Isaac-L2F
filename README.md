@@ -136,9 +136,12 @@ Dynamics model and parameter format from [rl-tools/l2f](https://github.com/rl-to
 
 ## Citing
 
-The GitHub sidebar's "Cite this repository" gives the entry for this package (from
-[CITATION.cff](CITATION.cff)). Please also cite the L2F paper whose dynamics it ports, and
-RAPTOR if you fly the foundation policy:
+Please cite [L2F](https://doi.org/10.1109/LRA.2024.3396025) (RA-L 2024), whose dynamics this
+package ports, and [RAPTOR](https://doi.org/10.1126/scirobotics.aec1481) (Science Robotics 2026)
+if you fly the foundation policy; "Cite this repository" in the sidebar gives this package.
+
+<details>
+<summary>BibTeX</summary>
 
 ```bibtex
 @article{eschmann2024learning,
@@ -163,6 +166,8 @@ RAPTOR if you fly the foundation policy:
   doi     = {10.1126/scirobotics.aec1481}
 }
 ```
+
+</details>
 
 ## License
 
