@@ -140,35 +140,6 @@ Please cite [L2F](https://doi.org/10.1109/LRA.2024.3396025) (RA-L 2024), whose d
 package ports, and [RAPTOR](https://doi.org/10.1126/scirobotics.aec1481) (Science Robotics 2026)
 if you fly the foundation policy; "Cite this repository" in the sidebar gives this package.
 
-<details>
-<summary>BibTeX</summary>
-
-```bibtex
-@article{eschmann2024learning,
-  author  = {Jonas Eschmann and Dario Albani and Giuseppe Loianno},
-  title   = {Learning to Fly in Seconds},
-  journal = {IEEE Robotics and Automation Letters},
-  year    = {2024},
-  volume  = {9},
-  number  = {7},
-  pages   = {6336--6343},
-  doi     = {10.1109/LRA.2024.3396025}
-}
-
-@article{eschmann2026raptor,
-  author  = {Jonas Eschmann and Dario Albani and Giuseppe Loianno},
-  title   = {RAPTOR: A foundation policy for quadrotor control},
-  journal = {Science Robotics},
-  year    = {2026},
-  volume  = {11},
-  number  = {114},
-  pages   = {eaec1481},
-  doi     = {10.1126/scirobotics.aec1481}
-}
-```
-
-</details>
-
 ## License
 
 MIT, see [LICENSE](LICENSE).
