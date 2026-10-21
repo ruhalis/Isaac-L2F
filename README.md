@@ -1,6 +1,5 @@
 # Isaac-L2F
 
-[![tests](https://github.com/ruhalis/Isaac-L2F/actions/workflows/tests.yml/badge.svg)](https://github.com/ruhalis/Isaac-L2F/actions/workflows/tests.yml)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](pyproject.toml)
 [![Isaac Lab 3.0.0rc1](https://img.shields.io/badge/Isaac%20Lab-3.0.0rc1-76B900.svg)](https://github.com/isaac-sim/IsaacLab)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
