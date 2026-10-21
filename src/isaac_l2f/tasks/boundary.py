@@ -42,7 +42,7 @@ def effective_inertia(params: Params) -> Tensor:
 def principal_inertia(params: Params, tol: float = 1e-12) -> Tensor:
     """``[N, 3]`` diagonal of :func:`effective_inertia`; raises if any env's tensor is not diagonal.
 
-    Both backends take a diagonal inertia in the body frame for a principal-axis-aligned body, which
+    Newton takes a diagonal inertia in the body frame for a principal-axis-aligned body, which
     every L2F registry airframe is.
     """
     inertia = effective_inertia(params)

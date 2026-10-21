@@ -5,11 +5,10 @@ before every ``isaaclab`` CLI command so that the ``gym.register`` calls below r
 are strings, so this module needs only ``gymnasium`` and stays importable without Isaac Lab;
 the env modules themselves import Isaac Lab and are Linux-only.
 
-Each env registers one id and both physics presets through its ``PresetCfg``
-(``physics=newton_mjwarp`` default, ``physics=physx`` validation), selected on the command line::
+Each env registers one id; physics is Newton only, through the ``newton_mjwarp`` preset of its
+``PresetCfg`` (also the default), selected on the command line::
 
     isaaclab train --task Isaac-L2F-Hover-Direct --rl_library rsl_rl --num_envs 1024 physics=newton_mjwarp --viz none
-    isaaclab train --task Isaac-L2F-Hover-Direct --rl_library rsl_rl --num_envs 1024 physics=physx --viz none
 """
 
 from __future__ import annotations

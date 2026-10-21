@@ -2,7 +2,7 @@
 
 Runs anywhere (CPU, no Isaac Lab). Two commands::
 
-    uv run python scripts/sim_to_sim.py compare runs/newton_hover.npz runs/physx_hover.npz
+    uv run python scripts/sim_to_sim.py compare runs/newton_hover.npz runs/newton_fig8.npz
     uv run python scripts/sim_to_sim.py record-l2f --num_envs 16 --steps 500 --reference figure8 --out runs/l2f_fig8.npz
 
 ``compare`` replays the policy in pure L2F from each recording's initial states with its reference

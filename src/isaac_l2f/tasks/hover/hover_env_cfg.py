@@ -1,20 +1,17 @@
 """``Isaac-L2F-Hover-Direct`` configuration (Isaac Lab 3.0.0rc1 API, verified 2026-10-18).
 
 Imports Isaac Lab, so this module is Linux-only; the registration in ``isaac_l2f.tasks`` refers
-to it by string. Physics presets live in :class:`L2FPhysicsCfg` and are chosen on the command
-line with the Hydra-style token ``physics=newton_mjwarp`` (default) or ``physics=physx``
-(Isaac Lab's auto selector: ``ovphysx`` kit-less, ``isaacsim_physx`` under Kit).
+to it by string. Physics runs on Newton only: :class:`L2FPhysicsCfg` holds the ``newton_mjwarp``
+preset (also the default), selected on the command line with the Hydra-style token
+``physics=newton_mjwarp``.
 """
 
 from __future__ import annotations
 
 from isaaclab_newton.physics import MJWarpSolverCfg, NewtonCfg
-from isaaclab_ov.physics import OvPhysxCfg
-from isaaclab_physx.physics import PhysxCfg
 
 from isaaclab.assets import ArticulationCfg
 from isaaclab.envs import DirectRLEnvCfg
-from isaaclab.physics import PhysxAutoCfg
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.sim import SimulationCfg
 from isaaclab.utils import configclass
@@ -31,11 +28,8 @@ DECIMATION = PHYSICS_HZ // POLICY_HZ
 
 @configclass
 class L2FPhysicsCfg(PresetCfg):
-    """Both physics presets of the contract. ``newton_mjwarp`` is the default, ``physx`` the validation preset."""
+    """The contract's physics preset: Newton MJWarp, also the default."""
 
-    isaacsim_physx: PhysxCfg = PhysxCfg()
-    ovphysx: OvPhysxCfg = OvPhysxCfg()
-    physx: PhysxAutoCfg = PhysxAutoCfg(isaacsim_physx=isaacsim_physx, ovphysx=ovphysx)
     # No contacts in the hover task (L2F has no ground and no obstacles), so the MJWarp buffers stay
     # small; obstacle scenes (M3) raise njmax/nconmax explicitly.
     newton_mjwarp: NewtonCfg = NewtonCfg(

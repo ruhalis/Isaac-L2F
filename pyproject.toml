@@ -1,7 +1,7 @@
 [project]
 name = "isaac-l2f"
 version = "0.1.0"
-description = "L2F-faithful quadrotor dynamics and RAPTOR-contract environments for Isaac Lab 3.0 (Newton + PhysX)"
+description = "L2F-faithful quadrotor dynamics and RAPTOR-contract environments for Isaac Lab 3.0 on Newton"
 readme = "README.md"
 authors = [
     { name = "ruhalis", email = "arlan.baikurazov@gmail.com" }
@@ -18,7 +18,6 @@ keywords = [
     "l2f",
     "raptor",
     "newton",
-    "physx",
     "robotics",
 ]
 classifiers = [
@@ -39,11 +38,12 @@ dependencies = [
 
 [project.optional-dependencies]
 # Isaac Lab 3.0 ships as one distribution on NVIDIA's index (Linux/Windows only, Newton included).
-# Kit-less path (primary): `ov` adds the kit-less PhysX, RTX and stage packages, so both physics
-# presets and both renderers run without Isaac Sim.
-isaac = ["isaaclab[rsl-rl,ov]==3.0.0rc1; sys_platform == 'linux'"]
-# Kit path: full Isaac Sim 6.1 for USD/GUI workflows and importers (several GB of extension cache).
-# Mutually exclusive with `isaac`: isaacsim-core pins packaging==26.0, ovphysx needs packaging<24.
+# Kit-less Newton path (primary): physics, Warp renderer and visualizers all come from Newton, so the
+# `ov` extra (kit-less PhysX, RTX and stage packages) is not installed.
+isaac = ["isaaclab[rsl-rl]==3.0.0rc1; sys_platform == 'linux'"]
+# Kit path: full Isaac Sim 6.1, used only for RTX rendering of recorded flights (scripts/render_flight.py)
+# and USD/GUI workflows; physics stays Newton. Mutually exclusive with `isaac`: Isaac Sim pins its own
+# torch (2.11.0) and numpy (2.3.1), while the kit-less split takes the latest.
 isaacsim = ["isaaclab[rsl-rl,isaacsim]==3.0.0rc1; sys_platform == 'linux'"]
 onnx = ["onnxruntime>=1.20"]
 raptor = [

@@ -3,7 +3,7 @@
 Linux + Isaac Lab 3.0 only (kit-less by default). The physics preset is a Hydra-style token::
 
     uv run --no-sync python scripts/fly_raptor.py --num_envs 16 --steps 500 physics=newton_mjwarp --viz none --out runs/newton_hover.npz
-    uv run --no-sync python scripts/fly_raptor.py --num_envs 16 --steps 500 physics=physx --viz none --reference figure8 --out runs/physx_fig8.npz
+    uv run --no-sync python scripts/fly_raptor.py --num_envs 16 --steps 500 physics=newton_mjwarp --viz none --reference figure8 --out runs/newton_fig8.npz
     uv run --no-sync python scripts/fly_raptor.py --num_envs 16 --steps 500 physics=newton_mjwarp --viz none --fault-rotor 0 --fault-effectiveness 0.5 --fault-step 100 --out runs/newton_fault.npz
     uv run --no-sync python scripts/fly_raptor.py --num_envs 4096 --steps 200 physics=newton_mjwarp --viz none   # throughput only
 

@@ -1546,7 +1546,7 @@ dependencies = [
     { name = "fsspec", version = "2026.9.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "hf-xet", marker = "(platform_machine == 'AMD64' and extra == 'extra-9-isaac-l2f-isaac') or (platform_machine == 'aarch64' and extra == 'extra-9-isaac-l2f-isaac') or (platform_machine == 'amd64' and extra == 'extra-9-isaac-l2f-isaac') or (platform_machine == 'arm64' and extra == 'extra-9-isaac-l2f-isaac') or (platform_machine == 'x86_64' and extra == 'extra-9-isaac-l2f-isaac') or (extra == 'extra-9-isaac-l2f-isaac' and extra == 'extra-9-isaac-l2f-isaacsim')" },
     { name = "httpx", marker = "extra == 'extra-9-isaac-l2f-isaac'" },
-    { name = "packaging", version = "23.2", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
+    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "pyyaml", marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "tqdm", marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "typing-extensions", marker = "extra == 'extra-9-isaac-l2f-isaac'" },
@@ -1756,7 +1756,7 @@ dependencies = [
 
 [package.optional-dependencies]
 isaac = [
-    { name = "isaaclab", extra = ["ov", "rsl-rl"], marker = "(sys_platform == 'linux' and extra == 'extra-9-isaac-l2f-isaac') or (extra == 'extra-9-isaac-l2f-isaac' and extra == 'extra-9-isaac-l2f-isaacsim')" },
+    { name = "isaaclab", extra = ["rsl-rl"], marker = "(sys_platform == 'linux' and extra == 'extra-9-isaac-l2f-isaac') or (extra == 'extra-9-isaac-l2f-isaac' and extra == 'extra-9-isaac-l2f-isaacsim')" },
 ]
 isaacsim = [
     { name = "isaaclab", extra = ["isaacsim", "rsl-rl"], marker = "(sys_platform == 'linux' and extra == 'extra-9-isaac-l2f-isaacsim') or (extra == 'extra-9-isaac-l2f-isaac' and extra == 'extra-9-isaac-l2f-isaacsim')" },
@@ -1786,8 +1786,8 @@ requires-dist = [
     { name = "foundation-policy", marker = "extra == 'raptor'", specifier = ">=1.0.2" },
     { name = "gymnasium", specifier = ">=1.0" },
     { name = "h5py", marker = "extra == 'raptor'", specifier = ">=3.10" },
+    { name = "isaaclab", extras = ["rsl-rl"], marker = "sys_platform == 'linux' and extra == 'isaac'", specifier = "==3.0.0rc1", index = "https://pypi.nvidia.com/" },
     { name = "isaaclab", extras = ["rsl-rl", "isaacsim"], marker = "sys_platform == 'linux' and extra == 'isaacsim'", specifier = "==3.0.0rc1", index = "https://pypi.nvidia.com/" },
-    { name = "isaaclab", extras = ["rsl-rl", "ov"], marker = "sys_platform == 'linux' and extra == 'isaac'", specifier = "==3.0.0rc1", index = "https://pypi.nvidia.com/" },
     { name = "numpy", specifier = ">=2.0" },
     { name = "onnxruntime", marker = "extra == 'onnx'", specifier = ">=1.20" },
     { name = "torch", specifier = ">=2.11" },
@@ -1844,8 +1844,8 @@ dependencies = [
     { name = "onnx" },
     { name = "onnxscript" },
     { name = "open3d", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "packaging", version = "23.2", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "packaging", version = "26.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
+    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "pillow" },
     { name = "pin", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'x86_64' and sys_platform == 'linux')" },
     { name = "pin-pink", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'x86_64' and sys_platform == 'linux')" },
@@ -1886,11 +1886,6 @@ wheels = [
 [package.optional-dependencies]
 isaacsim = [
     { name = "isaacsim", extra = ["all", "extscache"], marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
-]
-ov = [
-    { name = "ovphysx" },
-    { name = "ovrtx" },
-    { name = "ovstage" },
 ]
 rsl-rl = [
     { name = "onnxscript" },
@@ -2548,8 +2543,8 @@ name = "lazy-loader"
 version = "0.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "packaging", version = "23.2", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "packaging", version = "26.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
+    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/19/8c/0f2ff2a8b7513e68871a74740c17a504b0488c679b379e6445ebb7bd78dc/lazy_loader-0.6.tar.gz", hash = "sha256:2f4b7824d6401958639008a0cae20c776b61dff619accd6890693e2de8260167", size = 18438, upload-time = "2026-09-21T21:31:32.982Z" }
 wheels = [
@@ -2707,7 +2702,7 @@ dependencies = [
     { name = "fonttools", version = "4.66.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "kiwisolver", version = "1.5.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
-    { name = "packaging", version = "23.2", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
+    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "pillow", marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "pyparsing", version = "3.3.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "python-dateutil", marker = "extra == 'extra-9-isaac-l2f-isaac'" },
@@ -3414,8 +3409,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "flatbuffers", marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
-    { name = "packaging", version = "23.2", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
-    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "(extra == 'extra-9-isaac-l2f-isaac' and extra == 'extra-9-isaac-l2f-isaacsim') or (extra != 'extra-9-isaac-l2f-isaac' and extra != 'extra-9-isaac-l2f-isaacsim')" },
+    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
     { name = "protobuf", marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
 ]
 wheels = [
@@ -3436,8 +3430,8 @@ dependencies = [
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "onnx" },
     { name = "onnx-ir" },
-    { name = "packaging", version = "23.2", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "packaging", version = "26.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
+    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "typing-extensions" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/5f/12/b2050f2d3e2dfeda60bc52b85d54cdc3ebb4c902bcccc857ce0bb8ee6428/onnxscript-0.7.3.dev20261007.tar.gz", hash = "sha256:56d5a2c11edb851f0a730e382f1cf99ac86bab6c4338189a6a52c7df94fc8fa6", size = 648949, upload-time = "2026-10-07T07:17:34.083Z" }
@@ -3515,49 +3509,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/96/38/612eab766eafced59a44a318d40aa9c0bee5eafb98cb68af5d90f04168f1/osqp-1.0.5-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b8e0f2cc375ed485270dfa4636abac86a7499c2847e12603dafe40f7a55fdf61", size = 334937, upload-time = "2025-10-15T14:05:13.406Z" },
     { url = "https://files.pythonhosted.org/packages/df/cb/0f46c598fe5623c7c4c361c6c863ad51c5c9f58f8dc2408e070f4a908d9e/osqp-1.0.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bf39cc311089b5f4987b0469e8563ab378b9d1ea8f7f9d3aec93e0b6097cc51b", size = 357426, upload-time = "2025-10-15T14:05:14.614Z" },
     { url = "https://files.pythonhosted.org/packages/3b/d4/12f5ae735814466c490cb3e74ad9f38e0404f16bacc89738579866636ab5/osqp-1.0.5-cp312-cp312-win_amd64.whl", hash = "sha256:aafb6c65352ce7fd691927275a8ebd67974ceb4496925961d73a74e4f9a6e7fa", size = 310448, upload-time = "2025-10-15T14:05:15.546Z" },
-]
-
-[[package]]
-name = "ovphysx"
-version = "0.5.11"
-source = { registry = "https://pypi.nvidia.com/" }
-dependencies = [
-    { name = "ovstage" },
-    { name = "packaging", version = "23.2", source = { registry = "https://pypi.org/simple" } },
-]
-wheels = [
-    { url = "https://pypi.nvidia.com/ovphysx/ovphysx-0.5.11-py3-none-manylinux_2_35_aarch64.whl", hash = "sha256:fff7e648fe14989e6ae51b7c6e6c516beab0b4f0749110c32c5a142b31525946" },
-    { url = "https://pypi.nvidia.com/ovphysx/ovphysx-0.5.11-py3-none-manylinux_2_35_x86_64.whl", hash = "sha256:4e6f904d9858674ecf4fccc2a462d048f9eeb7d20724a7eafd294bf5ccac9a2c" },
-    { url = "https://pypi.nvidia.com/ovphysx/ovphysx-0.5.11-py3-none-win_amd64.whl", hash = "sha256:409637574296f2f4c9a377444c2072c5539a8a5adf88b9536c02fdff6af387be" },
-]
-
-[[package]]
-name = "ovrtx"
-version = "0.4.1.364340"
-source = { registry = "https://pypi.nvidia.com/" }
-wheels = [
-    { url = "https://pypi.nvidia.com/ovrtx/ovrtx-0.4.1.364340-py3-none-manylinux_2_35_aarch64.whl", hash = "sha256:38b33e5052b81572c11af317fd9f214b873a631ae727e448f6a6b990597c0320" },
-    { url = "https://pypi.nvidia.com/ovrtx/ovrtx-0.4.1.364340-py3-none-manylinux_2_35_x86_64.whl", hash = "sha256:597e09f34819f31a71fb919c9b0024c3b652588bdfa4d1858b2222f219d0ec09" },
-    { url = "https://pypi.nvidia.com/ovrtx/ovrtx-0.4.1.364340-py3-none-win_amd64.whl", hash = "sha256:f1a8e160912a503a5e536143f7bc1bca7048b3941a4c2756c5b661961bcb5752" },
-]
-
-[[package]]
-name = "ovstage"
-version = "0.1.1.355824"
-source = { registry = "https://pypi.nvidia.com/" }
-wheels = [
-    { url = "https://pypi.nvidia.com/ovstage/ovstage-0.1.1.355824-py3-none-manylinux_2_35_aarch64.whl", hash = "sha256:046aa360959bf5344d912470aaa11d3ec1fc750e28816e5239ce0438864c9863" },
-    { url = "https://pypi.nvidia.com/ovstage/ovstage-0.1.1.355824-py3-none-manylinux_2_35_x86_64.whl", hash = "sha256:b4affd9e5b23620ec71901a164df4ae373d25de2c76b9fae4d193d97aa2df0ec" },
-    { url = "https://pypi.nvidia.com/ovstage/ovstage-0.1.1.355824-py3-none-win_amd64.whl", hash = "sha256:fc8ae7fe950aa2ff8fd24643047f7156ffa1b9b384ce3f024ee2193929e21a3b" },
-]
-
-[[package]]
-name = "packaging"
-version = "23.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/fb/2b/9b9c33ffed44ee921d0967086d653047286054117d584f1b1a7c22ceaf7b/packaging-23.2.tar.gz", hash = "sha256:048fb0e9405036518eaaf48a55953c750c11e1a1b68e0dd1a9d62ed0c092cfc5", size = 146714, upload-time = "2023-10-01T13:50:05.279Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ec/1a/610693ac4ee14fcdf2d9bf3c493370e4f2ef7ae2e19217d7a237ff42367d/packaging-23.2-py3-none-any.whl", hash = "sha256:8c491190033a9af7e1d931d0b5dacc2ef47509b34dd0de67ed209b5203fc88c7", size = 53011, upload-time = "2023-10-01T13:50:03.745Z" },
 ]
 
 [[package]]
@@ -3666,8 +3617,8 @@ version = "7.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "narwhals" },
-    { name = "packaging", version = "23.2", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "packaging", version = "26.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
+    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/49/c3/72b369f5ed7701b04ab0ea3dcf83e9bbce71c0b3bc6f07f87568550d09ea/plotly-7.1.0.tar.gz", hash = "sha256:f860166a4a3d78c69cb1f4a15f28a5c8283eade98a282a698f3bb853a449ace5", size = 6689315, upload-time = "2026-09-15T19:21:21.75Z" }
 wheels = [
@@ -4054,9 +4005,8 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-9-isaac-l2f-isaac' and extra == 'extra-9-isaac-l2f-isaacsim')" },
     { name = "iniconfig" },
-    { name = "packaging", version = "23.2", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "packaging", version = "26.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
-    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "(extra == 'extra-9-isaac-l2f-isaac' and extra == 'extra-9-isaac-l2f-isaacsim') or (extra != 'extra-9-isaac-l2f-isaac' and extra != 'extra-9-isaac-l2f-isaacsim')" },
+    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
     { name = "pluggy" },
     { name = "pygments" },
 ]
@@ -4584,8 +4534,8 @@ dependencies = [
     { name = "markdown" },
     { name = "numpy", version = "2.3.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
-    { name = "packaging", version = "23.2", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "packaging", version = "26.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
+    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "pillow" },
     { name = "protobuf" },
     { name = "setuptools", version = "81.0.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
@@ -4617,8 +4567,8 @@ dependencies = [
     { name = "numpy", version = "2.3.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "orjson" },
-    { name = "packaging", version = "23.2", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "packaging", version = "26.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
+    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "pyvers" },
     { name = "torch", version = "2.11.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
     { name = "torch", version = "2.14.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
@@ -4841,8 +4791,8 @@ dependencies = [
     { name = "huggingface-hub", version = "1.33.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "numpy", version = "2.3.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
-    { name = "packaging", version = "23.2", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "packaging", version = "26.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
+    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
     { name = "pyyaml" },
     { name = "regex" },
     { name = "safetensors" },

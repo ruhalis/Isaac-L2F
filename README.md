@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 L2F-faithful quadrotor dynamics and RAPTOR-contract environments for
-[NVIDIA Isaac Lab 3.0](https://github.com/isaac-sim/IsaacLab) on both Newton and PhysX.
+[NVIDIA Isaac Lab 3.0](https://github.com/isaac-sim/IsaacLab) on Newton (MJWarp).
 
 <p align="center">
   <img src="docs/media/fig8.gif" width="800" alt="RAPTOR flying a figure-eight in Isaac-L2F">
@@ -96,25 +96,24 @@ uv run pytest -q
 ```
 
 With Isaac Lab 3.0 (Linux, NVIDIA GPU, Python 3.12). Isaac Lab ships as one distribution on
-NVIDIA's package index with Newton included. The primary, kit-less path also pulls Isaac Lab's
-kit-less PhysX, RTX and stage packages (`ovphysx`, `ovrtx`, `ovstage`), so both physics presets
-and both renderers run without Isaac Sim:
+NVIDIA's package index with Newton included. The primary path is kit-less: Newton physics and
+the Newton Warp renderer run without Isaac Sim:
 
 ```bash
 uv sync --extra isaac
 ```
 
-The Kit path installs full Isaac Sim 6.1 for USD/GUI workflows and importers; PhysX and RTX then
-run through Kit. The two extras are mutually exclusive (Isaac Sim 6.1 pins `packaging==26.0`,
-the kit-less PhysX package needs `packaging<24`), so switching is one sync either way:
+The optional Kit path installs full Isaac Sim 6.1 as the RTX render path for
+`scripts/render_flight.py` and for USD/GUI work; physics is still Newton. The two extras are
+mutually exclusive (Isaac Sim pins torch 2.11.0 and numpy 2.3.1, the kit-less split takes the
+latest), so switching is one sync either way:
 
 ```bash
 UV_HTTP_TIMEOUT=1800 uv sync --extra isaacsim   # extension-cache wheels are multi-GB; uv's 30 s default times out
 ```
 
-Kit-less training uses `physics=newton_mjwarp`; the PhysX preset is `physx`, Isaac Lab's auto
-selector, which resolves to `ovphysx` without Isaac Sim and to `isaacsim_physx` under Kit; the
-kit-less renderer selector is `ovrtx`. NVIDIA's index is a
+Training uses `physics=newton_mjwarp`; kit-less rendering is Newton's (`renderer=newton_renderer`,
+`--viz newton_gl`). NVIDIA's index is a
 regular extra index here (`unsafe-best-match`), as in NVIDIA's own pip instructions, because
 Isaac Sim pins NVIDIA-built transitive packages that exist only there.
 
