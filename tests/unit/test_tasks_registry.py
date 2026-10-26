@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import importlib.util
 import sys
 from importlib.metadata import entry_points
@@ -39,4 +40,35 @@ def test_isaac_facing_modules_compile():
     for name in ("hover_env.py", "hover_env_cfg.py", "agents/rsl_rl_ppo_cfg.py"):
         src = (root / name).read_text()
         compile(src, str(root / name), "exec")
-        assert "verro" not in src and "raptor_torch" not in src and "aquila" not in src
+
+
+ALLOWED_IMPORTS = {
+    "isaac_l2f",
+    "torch",
+    "numpy",
+    "gymnasium",
+    "h5py",
+    "onnxruntime",
+    "isaaclab",
+    "isaaclab_newton",
+    "isaaclab_rl",
+    "isaaclab_tasks",
+}
+FORBIDDEN_IMPORTS = {"isaaclab_physx", "isaaclab_ov", "isaaclab_contrib"}
+
+
+def test_package_imports_are_allowlisted():
+    """Repo code imports only the stdlib and an allowlist (no PhysX/OV/contrib, no downstream packages)."""
+    root = Path(importlib.util.find_spec("isaac_l2f").origin).parent
+    for path in sorted(root.rglob("*.py")):
+        for node in ast.walk(ast.parse(path.read_text(), str(path))):
+            if isinstance(node, ast.Import):
+                names = [alias.name for alias in node.names]
+            elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+                names = [node.module]
+            else:
+                continue
+            for name in names:
+                top = name.split(".")[0]
+                assert top not in FORBIDDEN_IMPORTS, f"{path}: forbidden import {name}"
+                assert top in sys.stdlib_module_names or top in ALLOWED_IMPORTS, f"{path}: unexpected import {name}"

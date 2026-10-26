@@ -240,5 +240,5 @@ def test_rslrl_mlp_onnx_export(tmp_path, norm):
 
 def test_import_does_not_load_onnxruntime():
     code = "import sys, isaac_l2f.policy; sys.exit(int('onnxruntime' in sys.modules))"
-    r = subprocess.run(["uv", "run", "python", "-c", code], capture_output=True, text=True)
+    r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)  # not `uv run`: it re-syncs the venv
     assert r.returncode == 0, r.stderr
