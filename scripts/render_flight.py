@@ -51,7 +51,7 @@ from PIL import Image, ImageDraw, ImageFont
 from isaac_l2f.dynamics import load_registry
 from isaac_l2f.sim2sim import Recording
 
-DEFAULT_ASSET_ROOT = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.1"
+DEFAULT_ASSET_ROOT = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2"
 CRAZYFLIE_SUBPATH = "Isaac/Robots/Bitcraze/Crazyflie/cf2x.usd"  # same file as isaaclab_assets CRAZYFLIE_CFG
 PROP_PRIMS = ("m1_prop", "m2_prop", "m3_prop", "m4_prop")  # cf2x: FR, BR, BL, FL (contract order), origin on the hub, axis local z
 HORIZONTAL_APERTURE = 20.955  # USD default; only the focal/aperture ratio (the FOV) matters here
@@ -475,7 +475,7 @@ def _asset_root() -> str:
 
         if NUCLEUS_ASSET_ROOT_DIR:
             return NUCLEUS_ASSET_ROOT_DIR
-    except Exception as exc:  # noqa: BLE001  (fall back to the 6.1 cloud root)
+    except Exception as exc:  # noqa: BLE001  (fall back to the 6.2 cloud root)
         print(f"[render] isaaclab asset root unavailable ({exc}); using {DEFAULT_ASSET_ROOT}")
     return DEFAULT_ASSET_ROOT
 

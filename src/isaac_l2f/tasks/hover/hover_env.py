@@ -6,7 +6,7 @@ motor lag and returns the rotor wrench, which goes through the backend-neutral p
 composer (body frame, at the COM); per policy step the core builds the contract observation,
 reward and termination from the simulator's COM state and draws the L2F reset distribution.
 
-Boundary rules (Isaac Lab 3.0.0rc1, verified 2026-10-18 on the installed package):
+Boundary rules (Isaac Lab 3.0.0, verified 2026-10-26 against the released package):
 
 * quaternions are (x, y, z, w) on the Isaac side and (w, x, y, z) in the core
   (:mod:`isaac_l2f.tasks.boundary`);
@@ -35,9 +35,6 @@ from typing import TYPE_CHECKING
 
 import torch
 
-import isaaclab.sim as sim_utils
-from isaaclab import cloner
-from isaaclab.assets import Articulation
 from isaaclab.envs import DirectRLEnv
 
 from isaac_l2f.dynamics import load_registry
@@ -81,19 +78,9 @@ class HoverEnv(DirectRLEnv):
 
     # ------------------------------------------------------------------ scene
     def _setup_scene(self):
-        self.robot = Articulation(self.cfg.robot_cfg)
-        src, dest = "/World/envs/env_0", "/World/envs/env_{}"
-        pos = cloner.grid_transforms(self.scene.num_envs, self.scene.cfg.env_spacing, device=self.device)[0]
-        plan = cloner.clone_plan_from_env_0(src, dest, self.scene.num_envs, self.device, pos, global_paths=())
-        cloner.replicate(plan, stage=self.scene.stage)
-        self.scene.articulations["robot"] = self.robot
-
-        light_cfg = sim_utils.DistantLightCfg(intensity=2000.0, color=(1.0, 1.0, 1.0))
-        light_cfg.func(
-            "/World/Light",
-            light_cfg,
-            orientation=(-0.14644663035869598, -0.3535534143447876, -0.3535534143447876, 0.8535533547401428),
-        )
+        # The robot and light are declared on ``cfg.scene`` and already cloned; this hook runs after
+        # the scene is built and before ``sim.reset()``.
+        self.robot = self.scene["robot"]
 
         params = load_registry(self.cfg.airframe, device=self.device)
         if self.cfg.init_overrides:

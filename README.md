@@ -1,7 +1,7 @@
 # Isaac-L2F
 
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](pyproject.toml)
-[![Isaac Lab 3.0.0rc1](https://img.shields.io/badge/Isaac%20Lab-3.0.0rc1-76B900.svg)](https://github.com/isaac-sim/IsaacLab)
+[![Isaac Lab 3.0.0](https://img.shields.io/badge/Isaac%20Lab-3.0.0-76B900.svg)](https://github.com/isaac-sim/IsaacLab)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 L2F-faithful quadrotor dynamics and RAPTOR-contract environments for
@@ -103,9 +103,9 @@ the Newton Warp renderer run without Isaac Sim:
 uv sync --extra isaac
 ```
 
-The optional Kit path installs full Isaac Sim 6.1 as the RTX render path for
+The optional Kit path installs full Isaac Sim 6.2 as the RTX render path for
 `scripts/render_flight.py` and for USD/GUI work; physics is still Newton. The two extras are
-mutually exclusive (Isaac Sim pins torch 2.11.0 and numpy 2.3.1, the kit-less split takes the
+mutually exclusive (Isaac Sim pins numpy 2.3.1 and packaging 26.0, the kit-less split takes the
 latest), so switching is one sync either way:
 
 ```bash
@@ -115,15 +115,17 @@ UV_HTTP_TIMEOUT=1800 uv sync --extra isaacsim   # extension-cache wheels are mul
 Training uses `physics=newton_mjwarp`; kit-less rendering is Newton's (`renderer=newton_renderer`,
 `--viz newton_gl`). NVIDIA's index is a
 regular extra index here (`unsafe-best-match`), as in NVIDIA's own pip instructions, because
-Isaac Sim pins NVIDIA-built transitive packages that exist only there.
+Isaac Sim pins NVIDIA-built transitive packages that exist only there. Isaac Sim 6.2 also pins
+`urllib3==2.7.0` against Isaac Lab 3.0.0's `urllib3>=2.8.0`, so `pyproject.toml` overrides it to
+`urllib3>=2.8.0` until NVIDIA aligns the two.
 
 Two Linux-only rules that follow from the split lock:
 
 - Pass the same extra to every `uv run` on that machine (`uv run --extra isaacsim python ...`,
   `uv run --extra isaac isaaclab train ...`) or use `uv run --no-sync`. A bare `uv run` re-syncs
-  to the default extra set, which is a different resolver split (the Kit split pins
-  `torch==2.11.0` and `numpy==2.3.1`; the kit-less and macOS splits take the latest), so it
-  silently moves the venv off Isaac Sim's pins.
+  to the default extra set, which is a different resolver split (both Linux splits pin
+  `torch==2.11.0` through Isaac Lab, the Kit split also `numpy==2.3.1`; macOS takes the latest),
+  so it silently moves the venv off Isaac Lab's and Isaac Sim's pins.
 - Anything that imports `isaacsim` needs NVIDIA's EULA accepted non-interactively:
   `OMNI_KIT_ACCEPT_EULA=YES`. Export it in your shell profile on the box if you accept it.
 

@@ -8,7 +8,7 @@ Linux + Isaac Lab 3.0 only (kit-less by default). The physics preset is a Hydra-
     uv run --no-sync python scripts/fly_raptor.py --num_envs 4096 --steps 200 physics=newton_mjwarp --viz none   # throughput only
 
 The recording is compared with pure L2F by ``scripts/sim_to_sim.py compare <npz>`` (runs anywhere).
-Pattern follows Isaac Lab 3.0.0rc1 ``isaaclab_rl/entrypoints/simple_agents.py`` (verified 2026-10-18).
+Pattern follows Isaac Lab 3.0.0 ``isaaclab_rl/entrypoints/simple_agents.py`` (verified 2026-10-26).
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ import torch
 
 from isaaclab.app import add_launcher_args, launch_simulation
 
-import isaaclab_tasks  # noqa: F401  (loads the isaaclab.tasks entry points, including isaac_l2f.tasks)
+import isaaclab_tasks  # noqa: F401  (Isaac Lab's own registrations; ours come from isaac_l2f.tasks below)
 from isaaclab_tasks.utils import setup_preset_cli
 from isaaclab_tasks.utils.parse_cfg import parse_env_cfg
 
@@ -66,7 +66,7 @@ def main() -> None:
     with launch_simulation(env_cfg, args):
         env = gym.make(args.task, cfg=env_cfg)
         u = env.unwrapped
-        device, n = torch.device(u.device), u.num_envs  # rc1's DirectRLEnv.device is a str
+        device, n = torch.device(u.device), u.num_envs  # DirectRLEnv.device is sim.device, a str
         policy = load_torchscript(args.policy, map_location=device) if args.policy else load_raptor(device=device)
         reference = (
             figure_eight(args.fig8_amplitude, args.fig8_period, device=device) if args.reference == "figure8" else hover_reference(device)

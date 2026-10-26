@@ -1,4 +1,4 @@
-"""RSL-RL PPO runner configuration for ``Isaac-L2F-Hover-Direct`` (Isaac Lab 3.0.0rc1, rsl_rl 5.x actor/critic split).
+"""RSL-RL PPO runner configuration for ``Isaac-L2F-Hover-Direct`` (Isaac Lab 3.0.0, rsl_rl 5.x actor/critic split).
 
 A plain feed-forward starting point for M2; the schedule and the privileged critic are tuned
 there. Imports Isaac Lab, so Linux-only; referenced by string from ``isaac_l2f.tasks``.

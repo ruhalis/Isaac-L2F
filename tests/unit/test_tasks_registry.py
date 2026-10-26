@@ -16,7 +16,7 @@ HOVER = "isaac_l2f.tasks.hover"
 
 def test_hover_registered_without_isaac_lab():
     spec = gym.spec(tasks.HOVER_TASK_ID)
-    assert tasks.HOVER_TASK_ID == "Isaac-L2F-Hover-Direct"  # rc1 ids carry no -v0
+    assert tasks.HOVER_TASK_ID == "Isaac-L2F-Hover-Direct"  # Isaac Lab 3.0 ids carry no -v0
     assert spec.entry_point == f"{HOVER}.hover_env:HoverEnv"
     kw = spec.kwargs
     assert kw["env_cfg_entry_point"] == f"{HOVER}.hover_env_cfg:HoverEnvCfg"

@@ -37,14 +37,14 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Isaac Lab 3.0 ships as one distribution on NVIDIA's index (Linux/Windows only, Newton included).
+# Isaac Lab 3.0.0 ships as one distribution on NVIDIA's index (Linux/Windows only, Newton included).
 # Kit-less Newton path (primary): physics, Warp renderer and visualizers all come from Newton, so the
 # `ov` extra (kit-less PhysX, RTX and stage packages) is not installed.
-isaac = ["isaaclab[rsl-rl]==3.0.0rc1; sys_platform == 'linux'"]
-# Kit path: full Isaac Sim 6.1, used only for RTX rendering of recorded flights (scripts/render_flight.py)
-# and USD/GUI workflows; physics stays Newton. Mutually exclusive with `isaac`: Isaac Sim pins its own
-# torch (2.11.0) and numpy (2.3.1), while the kit-less split takes the latest.
-isaacsim = ["isaaclab[rsl-rl,isaacsim]==3.0.0rc1; sys_platform == 'linux'"]
+isaac = ["isaaclab[rsl-rl]==3.0.0; sys_platform == 'linux'"]
+# Kit path: full Isaac Sim 6.2, used only for RTX rendering of recorded flights (scripts/render_flight.py)
+# and USD/GUI workflows; physics stays Newton. Mutually exclusive with `isaac`: Isaac Sim pins numpy
+# (2.3.1) and packaging (26.0), while the kit-less split takes the latest.
+isaacsim = ["isaaclab[rsl-rl,isaacsim]==3.0.0; sys_platform == 'linux'"]
 onnx = ["onnxruntime>=1.20"]
 raptor = [
     "foundation-policy>=1.0.2",
@@ -78,11 +78,16 @@ testpaths = ["tests"]
 
 [tool.uv]
 index-strategy = "unsafe-best-match"
+# Isaac Sim pins transitive pre-releases (e.g. tinyobjloader 2.0.0rc13), which uv's default refuses.
 prerelease = "allow"
 conflicts = [[{ extra = "isaac" }, { extra = "isaacsim" }]]
+# isaacsim-kernel 6.2.0.0 pins urllib3==2.7.0 against isaaclab 3.0.0's urllib3>=2.8.0 security floor, so
+# the published isaaclab[isaacsim] cannot resolve. The override replaces Isaac Sim's pin and keeps the
+# floor; the forks stay separate (kit-less keeps numpy 2.5.x). Drop it once Isaac Sim releases a fix.
+override-dependencies = ["urllib3>=2.8.0"]
 
 # Not explicit: Isaac Sim pins NVIDIA-built transitive packages (e.g. opencv-python-headless-noffmpeg
-# 4.14.0.94rc1) that exist only here, and a tool.uv.sources pin cannot reach transitive deps.
+# 4.14.0.94rc3) that exist only here, and a tool.uv.sources pin cannot reach transitive deps.
 # Together with index-strategy = "unsafe-best-match" this is NVIDIA's documented --extra-index-url setup.
 [[tool.uv.index]]
 name = "nvidia"
