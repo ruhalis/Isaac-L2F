@@ -1763,6 +1763,7 @@ dev = [
     { name = "onnxruntime", version = "1.26.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
     { name = "onnxruntime", version = "1.31.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
     { name = "pytest" },
+    { name = "rsl-rl-lib" },
 ]
 
 [package.metadata]
@@ -1786,6 +1787,7 @@ dev = [
     { name = "onnx", specifier = ">=1.16" },
     { name = "onnxruntime", specifier = ">=1.20" },
     { name = "pytest", specifier = ">=9.1.1" },
+    { name = "rsl-rl-lib", specifier = "==5.5.1" },
 ]
 
 [[package]]
@@ -3312,7 +3314,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "ml-dtypes" },
     { name = "numpy", version = "2.3.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
-    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
+    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
     { name = "onnx" },
     { name = "sympy" },
     { name = "typing-extensions" },
@@ -3365,11 +3367,11 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "ml-dtypes" },
     { name = "numpy", version = "2.3.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
-    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
+    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
     { name = "onnx" },
     { name = "onnx-ir" },
     { name = "packaging", version = "26.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
-    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
+    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
     { name = "typing-extensions" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/5f/12/b2050f2d3e2dfeda60bc52b85d54cdc3ebb4c902bcccc857ce0bb8ee6428/onnxscript-0.7.3.dev20261007.tar.gz", hash = "sha256:56d5a2c11edb851f0a730e382f1cf99ac86bab6c4338189a6a52c7df94fc8fa6", size = 648949, upload-time = "2026-10-07T07:17:34.083Z" }
@@ -4233,12 +4235,13 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "gitpython" },
     { name = "numpy", version = "2.3.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
-    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
+    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
     { name = "onnx" },
     { name = "onnxscript" },
     { name = "tensorboard" },
     { name = "tensordict" },
-    { name = "torch", version = "2.11.0", source = { registry = "https://pypi.org/simple" } },
+    { name = "torch", version = "2.11.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra == 'extra-9-isaac-l2f-isaacsim'" },
+    { name = "torch", version = "2.14.1", source = { registry = "https://pypi.org/simple" }, marker = "(extra == 'extra-9-isaac-l2f-isaac' and extra == 'extra-9-isaac-l2f-isaacsim') or (extra != 'extra-9-isaac-l2f-isaac' and extra != 'extra-9-isaac-l2f-isaacsim')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/97/0e/142a31e8124255ec9276516c49c6fbe1497f2146ea384a92b81d23e3c525/rsl_rl_lib-5.5.1.tar.gz", hash = "sha256:50129065b35c69735ea197343321145a400af8c1b5fe9a28116fdaf1890fab43", size = 68077, upload-time = "2026-09-09T11:28:51.656Z" }
 wheels = [
@@ -4464,16 +4467,17 @@ version = "2.21.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "absl-py", version = "2.4.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
-    { name = "absl-py", version = "2.5.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
+    { name = "absl-py", version = "2.5.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
     { name = "grpcio" },
     { name = "markdown" },
     { name = "numpy", version = "2.3.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
-    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
+    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
     { name = "packaging", version = "26.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
-    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
+    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
     { name = "pillow" },
     { name = "protobuf" },
-    { name = "setuptools", version = "81.0.0", source = { registry = "https://pypi.org/simple" } },
+    { name = "setuptools", version = "81.0.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra == 'extra-9-isaac-l2f-isaacsim'" },
+    { name = "setuptools", version = "84.0.0", source = { registry = "https://pypi.org/simple" }, marker = "(extra == 'extra-9-isaac-l2f-isaac' and extra == 'extra-9-isaac-l2f-isaacsim') or (extra != 'extra-9-isaac-l2f-isaac' and extra != 'extra-9-isaac-l2f-isaacsim')" },
     { name = "tensorboard-data-server" },
     { name = "werkzeug" },
 ]
@@ -4499,12 +4503,13 @@ dependencies = [
     { name = "cloudpickle" },
     { name = "importlib-metadata" },
     { name = "numpy", version = "2.3.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
-    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
+    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
     { name = "orjson" },
     { name = "packaging", version = "26.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaacsim'" },
-    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac'" },
+    { name = "packaging", version = "26.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra != 'extra-9-isaac-l2f-isaacsim'" },
     { name = "pyvers" },
-    { name = "torch", version = "2.11.0", source = { registry = "https://pypi.org/simple" } },
+    { name = "torch", version = "2.11.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-isaac-l2f-isaac' or extra == 'extra-9-isaac-l2f-isaacsim'" },
+    { name = "torch", version = "2.14.1", source = { registry = "https://pypi.org/simple" }, marker = "(extra == 'extra-9-isaac-l2f-isaac' and extra == 'extra-9-isaac-l2f-isaacsim') or (extra != 'extra-9-isaac-l2f-isaac' and extra != 'extra-9-isaac-l2f-isaacsim')" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/99/27/b34d0992b95bf61876d9600ed40c80c1aa4ec01e3611e9e38ac5c0c00e47/tensordict-0.14.3-cp312-cp312-macosx_14_0_arm64.whl", hash = "sha256:36e081a32d2c5a97eb7e785b0b3f4ed0a40c9a4f4aec5ee266059d40d6514063", size = 953100, upload-time = "2026-10-08T13:29:21.374Z" },

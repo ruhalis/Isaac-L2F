@@ -90,7 +90,7 @@ def test_hidden_size_inference_and_override(net):
     with pytest.raises(ValueError):
         mk(net, hidden_size=H + 1)  # h0 length mismatch
     with pytest.raises(ValueError):
-        TorchScriptPolicy(nn.Linear(2, 2))
+        TorchScriptPolicy(nn.Bilinear(2, 2, 2))  # two inputs, no hidden size info
 
 
 def test_feedforward_hidden_size_zero():
@@ -140,6 +140,102 @@ def test_onnx_matches_torchscript(net, tmp_path):
         assert torch.allclose(o.step(obs), t.step(obs), atol=1e-5)
         assert torch.allclose(o.hidden, t.hidden, atol=1e-5)
     assert isinstance(o, OnnxPolicy) and isinstance(o, Policy)
+
+
+class FFSingle(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.lin = nn.Linear(22, 4)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return torch.tanh(self.lin(x))
+
+
+class RecSingle(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.lin = nn.Linear(22, 4)
+        self.register_buffer("hidden_state", torch.zeros(1, 1, 8))
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.lin(x)
+
+
+def test_isaaclab_feedforward_torchscript(tmp_path):
+    torch.manual_seed(0)
+    m = FFSingle().eval()
+    path = tmp_path / "policy.pt"
+    torch.jit.save(torch.jit.script(m), str(path))
+    p = load_torchscript(path)
+    assert p.hidden_size == 0
+    obs = torch.randn(8, 22)
+    a = p.step(obs)
+    assert torch.equal(a, m(obs))
+    p.reset(torch.tensor([True] + [False] * 7))
+    assert torch.equal(p.step(obs), a)
+
+
+def test_recurrent_rslrl_torchscript_rejected(tmp_path):
+    path = tmp_path / "policy.pt"
+    torch.jit.save(torch.jit.script(RecSingle().eval()), str(path))
+    with pytest.raises(ValueError, match="recurrent"):
+        load_torchscript(path)
+
+
+def _rslrl_mlp(norm):
+    pytest.importorskip("tensordict")
+    rsl_models = pytest.importorskip("rsl_rl.models")
+    from tensordict import TensorDict
+
+    torch.manual_seed(0)
+    model = rsl_models.MLPModel(
+        TensorDict({"policy": torch.zeros(8, 22)}, batch_size=[8]),
+        {"policy": ["policy"]},
+        "policy",
+        4,
+        hidden_dims=[64, 64],
+        activation="elu",
+        obs_normalization=norm,
+        distribution_cfg={"class_name": "GaussianDistribution", "init_std": 1.0},
+    )
+    if norm:
+        model.update_normalization(TensorDict({"policy": torch.randn(64, 22) * 3 + 1}, batch_size=[64]))
+    return model.eval()
+
+
+@pytest.mark.parametrize("norm", [False, True])
+def test_rslrl_mlp_jit_export(tmp_path, norm):
+    model = _rslrl_mlp(norm)
+    path = tmp_path / "policy.pt"
+    jit = torch.jit.script(model.as_jit())
+    jit.save(str(path))
+    p = load_torchscript(path)
+    assert p.hidden_size == 0
+    obs = torch.randn(8, 22)
+    with torch.no_grad():
+        expected = model.as_jit()(obs)
+    assert torch.allclose(p.step(obs), expected, atol=1e-6)
+
+
+@pytest.mark.parametrize("norm", [False, True])
+def test_rslrl_mlp_onnx_export(tmp_path, norm):
+    pytest.importorskip("onnxruntime")
+    pytest.importorskip("onnx")
+    model = _rslrl_mlp(norm)
+    path = tmp_path / "policy.onnx"
+    onnx_model = model.as_onnx(False)
+    onnx_model.to("cpu")
+    onnx_model.eval()
+    torch.onnx.export(
+        onnx_model, onnx_model.get_dummy_inputs(), str(path), export_params=True, opset_version=18,
+        input_names=onnx_model.input_names, output_names=onnx_model.output_names,
+    )
+    o = load_onnx(path)
+    assert o.hidden_size == 0
+    obs = torch.randn(8, 22)
+    with torch.no_grad():
+        expected = model.as_jit()(obs)
+    assert torch.allclose(o.step(obs), expected, atol=1e-5)
 
 
 def test_import_does_not_load_onnxruntime():

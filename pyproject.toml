@@ -71,6 +71,7 @@ dev = [
     "onnx>=1.16",
     "onnxruntime>=1.20",
     "pytest>=9.1.1",
+    "rsl-rl-lib==5.5.1",
 ]
 
 [tool.pytest.ini_options]
