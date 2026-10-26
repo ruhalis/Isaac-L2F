@@ -33,7 +33,7 @@ class L2FPhysicsCfg(PresetCfg):
     """The contract's physics preset: Newton MJWarp, also the default."""
 
     # No contacts in the hover task (L2F has no ground and no obstacles), so the MJWarp buffers stay
-    # small; obstacle scenes (M3) raise njmax/nconmax explicitly.
+    # small; a downstream scene with contacts raises njmax/nconmax explicitly.
     newton_mjwarp: NewtonCfg = NewtonCfg(
         solver_cfg=MJWarpSolverCfg(njmax=5, nconmax=3, cone="pyramidal", impratio=1, integrator="implicitfast"),
         num_substeps=1,

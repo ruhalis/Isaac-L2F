@@ -1,7 +1,7 @@
 """RSL-RL PPO runner configuration for ``Isaac-L2F-Hover-Direct`` (Isaac Lab 3.0.0, rsl_rl 5.x actor/critic split).
 
-A plain, untuned feed-forward baseline that shows the env trains (the M2 smoke run); no
-performance claims. Imports Isaac Lab, so Linux-only; referenced by string from ``isaac_l2f.tasks``.
+A plain, untuned feed-forward baseline that shows the env trains; no performance
+claims. Imports Isaac Lab, so Linux-only; referenced by string from ``isaac_l2f.tasks``.
 """
 
 from isaaclab.utils import configclass
