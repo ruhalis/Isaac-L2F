@@ -14,9 +14,10 @@ Boundary rules (Isaac Lab 3.0.0rc1, verified 2026-10-18 on the installed package
   ``root_com_lin_vel_w``, ``root_com_ang_vel_b``); orientation is the link quaternion, which is
   the frame the wrench composer calls "body"; resets write the COM pose and COM velocity, with
   the angular velocity rotated to the world frame as the writer expects;
-* the simulator carries ``params.mass`` and ``boundary.effective_inertia(params)`` on the root
-  body (written at start-up with ``set_masses_index`` / ``set_inertias_index``); the prop bodies
-  are made negligible so the articulation is one L2F rigid body;
+* the root body carries the L2F mass and ``boundary.effective_inertia(params)`` minus the other
+  bodies' (written at start-up with ``set_masses_index`` / ``set_inertias_index``; the props are
+  shrunk to ``prop_mass``), so the composite articulation equals the L2F rigid body, with its CoM
+  within ~3e-5 m of the root CoM the contract reads;
 * gravity is the simulator's; the core's wrench never includes it;
 * when the backend runs the decimation loop inside one ``sim.step()`` (Newton with graph-safe
   actuators, ``handles_decimation()``), ``_apply_action`` runs once per policy step and the core
@@ -41,7 +42,14 @@ from isaaclab.envs import DirectRLEnv
 
 from isaac_l2f.dynamics import load_registry
 from isaac_l2f.dynamics import quaternion as quat
-from isaac_l2f.tasks.boundary import effective_inertia, quat_wxyz_to_xyzw, quat_xyzw_to_wxyz
+from isaac_l2f.tasks.boundary import (
+    bodies_in_root_frame,
+    composite_inertia,
+    effective_inertia,
+    quat_wxyz_to_xyzw,
+    quat_xyzw_to_wxyz,
+    root_for_composite,
+)
 from isaac_l2f.tasks.core import L2FCore, assert_rates
 
 if TYPE_CHECKING:
@@ -115,20 +123,57 @@ class HoverEnv(DirectRLEnv):
         return [int(i) for i in ids if int(i) != self._root_body_id]
 
     def _write_body_properties(self) -> None:
-        """Author the L2F mass and effective inertia on the root body and make the props negligible."""
+        """Make the composite articulation (root plus every other body) exactly the L2F rigid body."""
         n = self.scene.num_envs
-        self.robot.set_masses_index(masses=self.core.body_mass.reshape(n, 1), body_ids=self._body_ids)
-        self.robot.set_inertias_index(inertias=effective_inertia(self.core.params).reshape(n, 1, 9), body_ids=self._body_ids)
+        data = self.robot.data
+        root = self._root_body_id
+        q_com = data.body_com_quat_b.torch
+        ident = torch.tensor([0.0, 0.0, 0.0, 1.0], device=q_com.device, dtype=q_com.dtype)
+        err = torch.minimum((q_com - ident).abs().amax(dim=-1), (q_com + ident).abs().amax(dim=-1))
+        if bool((err > 1e-6).any()):
+            raise ValueError(f"body CoM frames are not aligned with the link frames (max quaternion error {err.max().item():.3e})")
         if self._prop_body_ids:
-            masses = self.robot.data.body_mass.torch[:, self._prop_body_ids]
-            inertias = self.robot.data.body_inertia.torch[:, self._prop_body_ids].reshape(n, len(self._prop_body_ids), 9)
+            masses = data.body_mass.torch[:, self._prop_body_ids]
+            inertias = data.body_inertia.torch[:, self._prop_body_ids].reshape(n, len(self._prop_body_ids), 9)
             target = torch.full_like(masses, self.cfg.prop_mass)
             self.robot.set_masses_index(masses=target, body_ids=self._prop_body_ids)
             self.robot.set_inertias_index(inertias=inertias * (target / masses)[..., None], body_ids=self._prop_body_ids)
-        total = self.robot.data.body_mass.torch.sum(dim=1)
-        mismatch = ((total - self.core.body_mass) / self.core.body_mass).abs().max().item()
-        if mismatch > 1e-3:
-            log.warning("articulation mass differs from the airframe mass by %.2f %% (props?)", 100 * mismatch)
+
+        target_mass = self.core.body_mass.to(torch.float64)
+        target_inertia = effective_inertia(self.core.params).to(torch.float64)
+        others = [i for i in range(self.robot.num_bodies) if i != root]
+
+        def composite() -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+            pose = data.body_link_pose_w.torch.to(torch.float64)
+            m = data.body_mass.torch.to(torch.float64)
+            com, inertia = bodies_in_root_frame(
+                pose[..., :3],
+                quat_xyzw_to_wxyz(pose[..., 3:]),
+                data.body_com_pos_b.torch.to(torch.float64),
+                data.body_inertia.torch.to(torch.float64).reshape(n, -1, 3, 3),
+                root,
+            )
+            return m, com, inertia
+
+        m, com, inertia = composite()
+        m_root, i_root = root_for_composite(
+            target_mass, target_inertia, com[:, root], m[:, others], com[:, others], inertia[:, others]
+        )
+        self.robot.set_masses_index(masses=m_root.to(torch.float32).reshape(n, 1), body_ids=[root])
+        self.robot.set_inertias_index(inertias=i_root.to(torch.float32).reshape(n, 1, 9), body_ids=[root])
+
+        m, com, inertia = composite()
+        total, c_com, c_inertia = composite_inertia(m, com, inertia)
+        mass_err = ((total - target_mass) / target_mass).abs()
+        scale = torch.diagonal(target_inertia, dim1=-2, dim2=-1).amax(dim=-1)
+        inertia_err = (c_inertia - target_inertia).abs().amax(dim=(-2, -1)) / scale
+        if bool((mass_err > 1e-5).any()) or bool((inertia_err > 1e-5).any()):
+            raise RuntimeError(
+                f"composite articulation differs from the L2F body: worst relative mass error {mass_err.max().item():.3e}, "
+                f"worst inertia error {inertia_err.max().item():.3e} of the largest diagonal entry"
+            )
+        offset = (c_com - com[:, root]).norm(dim=-1).max().item()
+        log.info("composite CoM offset from the root CoM: max %.3e m over %d envs", offset, n)
 
     # ------------------------------------------------------------------ hooks
     def set_reference(self, position=None, velocity=None, env_ids=None) -> None:

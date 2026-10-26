@@ -25,7 +25,7 @@ import torch
 from isaac_l2f.dynamics import State, load_registry, reward, step, student_observation, terminated
 from isaac_l2f.tasks.boundary import effective_inertia
 from isaac_l2f.tasks.core import L2FCore
-from rigid_twin import rigid_rk4
+from rigid_twin import rigid_rk4, rigid_rk4_world_frozen, rigid_semi_implicit_euler, wrench_to_world
 
 N = 32
 PHYSICS_DT = 1 / 400
@@ -199,3 +199,64 @@ def test_closed_loop_balanced_motors_ideal_twin():
     assert err_obs < 1e-7, err_obs
     assert torch.allclose(core.state.position, end.position, atol=1e-7)
     assert torch.allclose(core.state.angular_velocity, end.angular_velocity, atol=1e-6)
+
+
+def _backend_twin_flight_errors(integrator):
+    """Max one-step errors of the core around a world-frozen-wrench backend twin, teacher-forced along RAPTOR flight."""
+    pytest.importorskip("foundation_policy")
+    from isaac_l2f.policy import load_raptor
+
+    params = _params()
+    core, s0 = _core(params, seed=5)
+    policy = load_raptor()
+    policy.reset()
+    states, actions = [s0], []
+    for _ in range(100):
+        a = policy.step(student_observation(params, states[-1]).float()).double()
+        actions.append(a)
+        states.append(step(params, states[-1], a))
+    inertia = effective_inertia(params)
+    err = {k: 0.0 for k in ("position", "orientation", "linear_velocity", "angular_velocity", "rpm")}
+    for t in range(100):
+        s, nxt = states[t], states[t + 1]
+        _load(core, s)
+        core.pre_physics_step(actions[t])
+        p, q, v, w = s.position, s.orientation, s.linear_velocity, s.angular_velocity
+        for _ in range(DECIMATION):
+            fb, tb, fw, td = core.substep(PHYSICS_DT)
+            force_w, torque_w = wrench_to_world(q, fb, tb, fw, td)  # once per substep, start orientation
+            p, q, v, w = integrator(p, q, v, w, force_w, torque_w, params.mass, inertia, params.gravity, PHYSICS_DT)
+        core.sync(p, q, v, w)
+        out = core.state
+        for k in err:
+            err[k] = max(err[k], (getattr(out, k) - getattr(nxt, k)).abs().max().item())
+    err["max_omega"] = max(st.angular_velocity.norm(dim=-1).max().item() for st in states)
+    return err
+
+
+def test_one_step_parity_backend_twin_semi_implicit_euler_raptor_flight():
+    """Newton/MJWarp ``implicitfast`` = semi-implicit Euler with the wrench frozen in world per 2.5 ms substep.
+
+    Documents the backend's discretisation cost along RAPTOR flight, not a defect of the core.
+    """
+    err = _backend_twin_flight_errors(rigid_semi_implicit_euler)
+    _report("backend twin (semi-implicit Euler, world-frozen wrench), 4 x 2.5 ms, RAPTOR flight", err)
+    # measured 2026-10-26: position 1.12e-04, orientation 8.74e-04, lin vel 6.08e-04, ang vel 1.06e-02 at |ω| up to 7 rad/s
+    assert err["position"] < 2.3e-4
+    assert err["orientation"] < 1.8e-3
+    assert err["linear_velocity"] < 1.3e-3
+    assert err["angular_velocity"] < 2.2e-2
+
+
+def test_one_step_parity_backend_twin_rk4_world_frozen_raptor_flight():
+    """Newton/MJWarp with the ``rk4`` option: RK4 with the same world-frozen wrench (no per-stage re-rotation).
+
+    Documents the backend's discretisation cost along RAPTOR flight, not a defect of the core.
+    """
+    err = _backend_twin_flight_errors(rigid_rk4_world_frozen)
+    _report("backend twin (RK4, world-frozen wrench), 4 x 2.5 ms, RAPTOR flight", err)
+    # measured 2026-10-26: position 2.74e-06, orientation 2.54e-05, lin vel 5.97e-04, ang vel 1.02e-02 at |ω| up to 7 rad/s
+    assert err["position"] < 5.5e-6
+    assert err["orientation"] < 5.1e-5
+    assert err["linear_velocity"] < 1.2e-3
+    assert err["angular_velocity"] < 2.1e-2

@@ -118,7 +118,8 @@ def main() -> None:
         track = ((out.position - out.position_ref) ** 2).sum(-1) ** 0.5
         print(f"[fly_raptor] backend {out.meta['backend']}, {n} envs, {args.steps} steps, hold {u._hold_dt:.4f} s")
         print(f"[fly_raptor] {wall * 1e3:.2f} ms/step -> {n / wall:.0f} env-steps/s; terminated {int((~alive[-1]).sum())}/{n}")
-        print(f"[fly_raptor] tracking error |p - p_ref|: final max {track[-1][alive[-1]].max():.3f} m, rms {float((track[alive] ** 2).mean() ** 0.5):.3f} m")
+        final = f"{track[-1][alive[-1]].max():.3f} m" if alive[-1].any() else "n/a (all terminated)"
+        print(f"[fly_raptor] tracking error |p - p_ref|: final max {final}, rms {float((track[alive] ** 2).mean() ** 0.5):.3f} m")
         if args.out is not None:
             args.out.parent.mkdir(parents=True, exist_ok=True)
             out.save(args.out)
